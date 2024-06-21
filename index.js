@@ -26,6 +26,8 @@ async function reconnect() {
     }
   }
 
+  
+
 client.on('qr', (qr)=>{
     qrcode.generate(qr, {small:true})
     console.log('QR RECEIVED', qr)
