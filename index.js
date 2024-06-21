@@ -16,6 +16,7 @@ const client = new Client({
     },
   });
 
+
 client.on('qr', (qr)=>{
     qrcode.generate(qr, {small:true})
     console.log('QR RECEIVED', qr)
@@ -33,20 +34,39 @@ app.get('/', (req,res)=>{
     return res.json({mensaje: "hola mundo"})
 })
 
-app.post('/enviar-mensaje', (req,res)=>{
+app.post('/enviar-mensaje', async(req,res)=>{
     const {numero, mensaje} = req.body;
-    let numero_enviar = numero + '@c.us'
-    
-    client.sendMessage(numero_enviar, mensaje)
-           .then(()=>{
-            res.json({mensaje: 'Mensaje enviado correctamente.'});
-           })
-           .catch((error)=>{
-            console.error('Error al enviar mensaje:', error)
-           });
+   console.log(numero)
+   console.log(mensaje)
+
+    try {
+        for (const phoneNumber of numero) {
+            const formattedNumber = phoneNumber + '@c.us';
+            console.log('formattedNumber:', formattedNumber)
+            await client.sendMessage(formattedNumber, mensaje);
+        }   
+
+       res.json({ mensaje: 'Mensajes enviados correctamente.' });
+   } catch (error) {
+        console.log(error)
+        res.status(500).json({ mensaje: 'Error al enviar mensajes' });
+   }
+
 });
+
 app.listen(port, ()=>{
     console.log(`servidor escuchando en el puerto ${port}`)
 });
 
-await client.initialize();
+await client.initialize();   
+
+
+// let numero_enviar = numero + '@c.us'
+
+// client.sendMessage(numero_enviar, mensaje)
+//        .then(()=>{
+//         res.json({mensaje: 'Mensaje enviado correctamente.'});
+//        })
+//        .catch((error)=>{
+//         console.error('Error al enviar mensaje:', error)
+//        });
