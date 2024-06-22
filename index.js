@@ -60,7 +60,7 @@ app.post('/enviar-mensaje', async(req,res)=>{
    } catch (error) {
     console.error('Error sending message:', error);
         res.status(500).json({ mensaje: 'Error al enviar mensajes' });
-        // await reconnect();
+        await reconnect();
     }
     
 });
