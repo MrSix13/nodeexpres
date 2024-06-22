@@ -56,12 +56,11 @@ app.post('/enviar-mensaje', async(req,res)=>{
             console.log('formattedNumber:', formattedNumber)
             await client.sendMessage(formattedNumber, mensaje);
         }   
-
        res.json({ mensaje: 'Mensajes enviados correctamente.' });
    } catch (error) {
     console.error('Error sending message:', error);
         res.status(500).json({ mensaje: 'Error al enviar mensajes' });
-        await reconnect();
+        // await reconnect();
     }
     
 });
