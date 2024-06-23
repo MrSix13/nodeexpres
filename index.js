@@ -59,6 +59,8 @@ app.post('/enviar-mensaje', async(req,res)=>{
    console.log(numero)
    console.log(mensaje)
 
+   
+
     try {
         for (const phoneNumber of numero) {
             const formattedNumber = phoneNumber + '@c.us';
