@@ -1,20 +1,17 @@
 import express from 'express';
-import { Client } from 'whatsapp-web.js';
+// import { Client, LocalAuth } from 'whatsapp-web.js';
+import pkg from 'whatsapp-web.js';
+const { Client, LocalAuth } = pkg;
 import qrcode from 'qrcode-terminal';
 import cors from 'cors';
+import fs from 'fs';
+import path from 'path';
 
 const port = process.env.PORT || 3000;
 const app = express();
 
 app.use(express.json());
 app.use(cors());
-const client = new Client({
-    webVersionCache: {
-      type: "remote",
-      remotePath:
-        "https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html",
-    },
-  });
 
 async function reconnect() {
     try {
@@ -26,19 +23,31 @@ async function reconnect() {
     }
   }
 
+
+
+const client = new Client({
+    authStrategy: new LocalAuth({ dataPath: 'session' }),
+    webVersionCache: {
+      type: "remote",
+      remotePath:
+        "https://raw.githubusercontent.com/wppconnect-team/wa-version/main/html/2.2412.54.html",
+    },
+  });
+
   
 
 client.on('qr', (qr)=>{
     qrcode.generate(qr, {small:true})
     console.log('QR RECEIVED', qr)
 });
+
+client.on('remote_session_saved', () => {
+    console.log('remote_session_saved')
+});
 client.on('ready', ()=>{
     console.log('Conectado a wsp');
 });
 client.on('message', (message)=>{
-    if(message._data.from === '56963497946@c.us'){
-        console.log('Mensaje recibido', message._data);
-    }
 });
 
 app.get('/', (req,res)=>{
@@ -71,13 +80,3 @@ app.listen(port, ()=>{
 
 await client.initialize();   
 
-
-// let numero_enviar = numero + '@c.us'
-
-// client.sendMessage(numero_enviar, mensaje)
-//        .then(()=>{
-//         res.json({mensaje: 'Mensaje enviado correctamente.'});
-//        })
-//        .catch((error)=>{
-//         console.error('Error al enviar mensaje:', error)
-//        });
